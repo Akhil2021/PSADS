@@ -1,0 +1,54 @@
+package javaapplication27;
+import java.util.*; 
+class JavaApplication27 
+{ 
+    public static void main(String args[])  
+    {
+        int[] k = {10,20,30};
+        int[] f = {34,8,50};
+        int n = k.length;
+        int cost = optst(k,f,n);
+        System.out.print(cost);
+    }
+    static int optst(int[] k , int[] f , int n)
+    {
+        int[] keys = k.clone();
+        Arrays.sort(k);
+        int[] freq  = new int[n];
+        for(int i=0;i<k.length;i++)
+        {
+            int a= k[i];
+            for(int j=0;j<k.length;j++)
+            {
+                if(a==keys[j])
+                {
+                    freq[i]=f[j];
+                    break;
+                }
+            }
+        }
+        return opcost(freq,0,n-1);
+    }
+    static int opcost(int[] f,int low,int high)
+    {
+        if(high<low)
+            return 0;
+        if(high==low)
+            return f[low];
+        int sum=0;
+        for(int i=low;i<=high;i++)
+        {
+            sum+=f[i];
+        }
+        int min = Integer.MAX_VALUE;
+        for(int r = low; r<=high ; r++)
+        {
+            int cost = opcost(f,low,r-1)+opcost(f,r+1,high);
+            if(cost<min)
+            {
+                min = cost;
+            }
+        }
+            return min + sum;  
+    }
+}  
