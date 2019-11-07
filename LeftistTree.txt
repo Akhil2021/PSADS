@@ -1,0 +1,169 @@
+#include <stdio.h>
+struct node
+{      
+    int data,dist;
+	struct node *right,*left;
+
+}*root,*temp,*r1,*r2;
+
+void inorder(struct node *p)
+{      
+    if(p!=NULL)
+	{     
+		inorder(p->left);
+		printf("\t%d",p->data);
+		inorder(p->right);
+	}
+}
+void postorder(struct node *p)
+{         
+	if(p!=NULL)
+	{          
+		postorder(p->left);
+		postorder(p->right);
+		printf("\t%d",p->data);
+	}	
+}
+int depth(struct node *p)
+{      	
+    if(p==NULL)
+	{          
+		return(-1);
+	}
+	else
+	{      
+		return(p->dist);
+	}
+}
+struct node * meld(struct node *h,struct node *k)
+{
+	if(h==NULL)
+		return k;
+	if(k==NULL)
+		return h;
+	if(k->data<h->data)
+	{          
+		temp=k;
+		k=h; 
+		h=temp;
+	}
+	h->right=meld(h->right,k);
+	if(depth(h->right)>depth(h->left))
+	{
+		temp=h->right;
+		h->right=h->left;
+		h->left=temp;
+	}
+	if(h->right==NULL)
+		h->dist=0;
+	else
+		h->dist=1+(h->right->dist);
+	return(h);
+}
+struct node * deletion(struct node * root)
+{
+	if(root !=NULL)
+	{
+	printf("Deleted element is %d\n",root->data);
+	root=meld(root->right,root->left);
+	}
+	return root;
+}
+struct node * insert(struct node *newroot)
+{     
+     int val;
+	struct node *z,*x;
+	z=(struct node *)malloc(sizeof(struct node));
+	z->right=NULL;
+	z->left=NULL;
+	z->dist=0;
+	printf("Enter the value of the node to be added: ");
+	scanf("%d",&val);
+	z->data=val;
+	newroot =meld(newroot,z);
+	printf("Root element is %d\t distance value is %d",newroot->data,newroot->dist+1);
+	return(newroot);
+}
+void treemerge()
+{
+	int val;
+	r1=(struct node *)malloc(sizeof(struct node));
+	r1->right=NULL;
+	r1->left=NULL;
+	r1->dist=0;
+	printf("*****First tree***********");
+	printf("\nEnter the root node");
+	scanf("%d",&val);
+	r1->data=val;
+	while(1)
+	{
+		printf("\nIf you want to insert element to first tree enter 1 else 0");
+		scanf("%d",&val);
+		if(val)
+		{
+			r1=insert(r1);
+		}
+		else
+			break;
+}
+	r2=(struct node *)malloc(sizeof(struct node));
+	r2->right=NULL;
+	r2->left=NULL;
+	r2->dist=0;
+	printf("*****Second tree***********");
+	printf("\nEnter the root node");
+	scanf("%d",&val);
+	r2->data=val;
+	while(1)
+	{
+		printf("\nIf you want to insert element to second tree enter 1 else 0");
+		scanf("%d",&val);
+		if(val)
+		{
+			r2=insert(r2);
+		}
+		else
+			break;
+	}
+	printf("\nFirst tree");
+	inorder(r1);
+	printf("\nSecond tree");
+	inorder(r2);
+	r1=meld(r1,r2);
+	printf("\nRoot element is: %d\n",r1->data);
+	inorder(r1);
+}
+int main() 
+{
+int bkpoint=0,value,val1;
+printf("\n****Lefist Max Heap Management****");
+printf("\nEnter root node\n");
+scanf("%d",&value);
+root=(struct node *)malloc(sizeof(struct node));
+root->right=NULL;
+root->left=NULL;
+root->dist=0;
+root->data=value;
+while(1)
+{    
+	int val;
+	printf("\nEnter ur option 1.insert\t2.Delete\t3.Traversal\t4.Meld\t5.exit\n");
+	scanf("%d",&val);
+	switch(val) 
+	{
+	case 1:root=insert(root);break;
+	case 2:root=deletion(root);break;
+	case 3:printf("Inorder traversal \n");inorder(root);
+		   printf("\nPostorder traversal \n");postorder(root);
+		   break;
+	case 4:treemerge();break;
+	case 5:bkpoint=1;break;
+	default:break;
+	}
+	if(bkpoint==1) 
+	{
+		break;
+	}
+}
+return 1;
+}
