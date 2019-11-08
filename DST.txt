@@ -1,0 +1,190 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <string.h>
+int max_bits;
+struct node
+{
+ char key[10];
+ struct node *left;
+ struct node *right;
+}*temp1;
+
+
+struct node* newNode(char key[])
+{
+ struct node* temp = (struct node*)malloc(sizeof(struct node));
+ strcpy(temp->key,key);
+ temp->left = NULL;
+ temp->right = NULL;
+ return temp;
+}
+
+
+int con_format(char* key)
+{
+ int key_len = strlen(key),j,k;
+ for(k=0;k<key_len;k++)
+ if(key[k]!='0' && key[k]!='1')
+{
+ printf("It is not a binary number\n");
+ return 0;
+ }
+ if(key_len<max_bits)
+{
+ for(j=max_bits-1,k=key_len-1;k>=0;j--,k--)
+ key[j]=key[k];
+ for(;j>=0;j--)
+ key[j]='0'; 
+key[max_bits]='\0';
+ }
+ return 1;
+}
+
+
+struct node* insert(struct node* root,char key[],int c_bit)
+{
+ int i;
+ char cb = key[c_bit];
+ if(root==NULL)
+{
+ root=newNode(key);
+ printf("%s is inserted\n",key);
+ return root;
+ }
+ if(strcmp(key,root->key)==0)
+{
+ printf("The key %s is already inserted\n",root->key);
+ return root;
+ }
+ else
+{
+ if(cb=='0')
+ root->left=insert(root->left,key,c_bit+1);
+ else
+ root->right=insert(root->right,key,c_bit+1);
+ }
+ return root;
+}
+
+
+void search(struct node* root,char key[],int c_bit)
+{
+ if(root==NULL)
+{
+ printf("It is not present in the tree\n");
+ return;
+ }
+ if(strcmp(key,root->key)==0)
+{
+ printf("It is found at root\n"); 
+ return;
+ }
+ if((root->left) && strcmp(key,root->left->key)==0)
+ printf("It is found at left of %s\n",root->key);
+ else if((root->right) && strcmp(key,root->right->key)==0)
+ printf("It is found at right of %s\n",root->key);
+ else
+{
+ if(key[c_bit]=='0')
+ search(root->left,key,c_bit+1);
+ else
+ search(root->right,key,c_bit+1);
+ }
+ return;
+}
+
+
+void inorder(struct node* root)
+{
+ if(root)
+{
+ inorder(root->left);
+ printf("%s ",root->key);
+ inorder(root->right);
+ }
+}
+
+
+struct node *minval(struct node* root)
+{
+ struct node *current = root;
+ while(current->left!=NULL)
+ current = current->left;
+ return current;
+}
+
+
+struct node *delete(struct node* root,char key[],int c_bit)
+{
+ if(root==NULL)
+{ 
+ printf("It is not present in the tree\n");
+ return NULL;
+ }
+ if(strcmp(key,root->key)==0)
+{
+ if(root->left == NULL)
+ {
+ struct node* temp = root->right;
+ free(root);
+ return temp;
+ }
+ else if(root->right == NULL)
+ {
+ struct node* temp = root->left;
+ free(root);
+ return temp;
+ }
+ temp1 = minval(root->right);
+ strcpy(root->key,temp1->key);
+ root->right = delete(root->right,temp1->key,c_bit+1);
+ }
+ else
+{
+ if(key[c_bit]=='0')
+ root->left=delete(root->left,key,c_bit+1);
+ else
+ root->right=delete(root->right,key,c_bit+1);
+ }
+ return root;
+}
+
+
+int main()
+{
+ struct node* root = NULL;
+ int choice,z;
+ char key[10]; 
+ printf("Enter the max number of bits\n");
+ scanf("%d",&max_bits);
+ printf("Enter your choice\n");
+ do
+{
+ printf("1.Insert 2.Search 3.Inorder 4.Delete 5.Exit\n");
+ scanf("%d",&choice);
+ switch(choice)
+{
+ case 1: printf("Enter the key to be inserted\n");
+ scanf("%s",&key);
+ if(con_format(key))
+ root=insert(root,key,0);
+ break;
+ case 2: printf("Enter the key to be searched\n");
+ scanf("%s",&key);
+ if(con_format(key))
+ search(root,key,0);
+ break;
+ case 3: inorder(root);
+ printf("\n");
+ break;
+ case 4: printf("Enter the key to be deleted\n");
+ scanf("%s",&key);
+ if(con_format(key))
+ root=delete(root,key,0);
+ break;
+ default: break;
+ }
+ } while(choice<5);
+ return 0;
+} 
